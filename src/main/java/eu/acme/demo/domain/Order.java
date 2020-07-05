@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "orders")
 public class Order extends AuditableEntity {
 
-    @Column(name = "ref_code", length = 30, nullable = false)
+    @Column(name = "ref_code", length = 30, nullable = false, unique = true)
     private String clientReferenceCode;
 
     @Column(name = "description")

@@ -4,6 +4,11 @@ import eu.acme.demo.service.OrderService;
 import eu.acme.demo.web.dto.OrderDto;
 import eu.acme.demo.web.dto.OrderLiteDto;
 import eu.acme.demo.web.dto.OrderRequest;
+import eu.acme.demo.web.error.ErrorCode;
+import eu.acme.demo.web.error.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,19 +30,29 @@ public class OrderAPI {
     }
 
     @GetMapping("/{orderId}")
-    public OrderDto fetchOrder(@PathVariable UUID orderId) {
-        //TODO: fetch specific order from DB
-        // if order id not exists then return an HTTP 400 (bad request) with a proper payload that contains an error code and an error message
-
-        return orderService.findById(orderId);
+    public ResponseEntity<?> fetchOrder(@PathVariable UUID orderId) {
+        OrderDto orderDto = orderService.findById(orderId);
+        if (orderDto == null) {
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.setErrorCode(ErrorCode.INVALID_ORDER_ID);
+            errorResponse.setErrorMessage("Order ID (orderId) does not exist");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(orderDto, HttpStatus.OK);
     }
 
     @PostMapping
-    public OrderDto submitOrder(@RequestBody OrderRequest orderRequest) {
-        //TODO: submit a new order
-        // if client reference code already exist then return an HTTP 400 (bad request) with a proper payload that contains an error code and an error message
-
-        return  orderService.save(orderRequest);
+    public ResponseEntity<?> submitOrder(@RequestBody OrderRequest orderRequest) {
+        OrderDto orderDto = null;
+        try {
+            orderDto = orderService.save(orderRequest);
+        } catch (DataIntegrityViolationException ex) {
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.setErrorCode(ErrorCode.DUPLICATE_CLIENT_REF);
+            errorResponse.setErrorMessage("Client reference code (clientReferenceCode) already exists");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(orderDto, HttpStatus.OK);
     }
 
 }

@@ -1,43 +1,105 @@
-# Getting Started
-
-This is demo project to evaluate Java Developer proficiency in Spring Boot.  
-
-The context of demo is about an ordering application. User can submit an order and view any order registered on system via OrderAPI.
-
-Maven 3 and Java 8 are required in order to build the project. 
-
-The demo app uses H2 in memory database. As a result, you don't need to install any database server at all. 
-Database migration is performed automatically by JPA (see application.yml) 
-
-Main tasks:
-
-1. Fill in implementation of Order API methods in order to fetch all orders, fetch a specific order and submit a new order
-2. Write unit tests according to TODO notes within unit test files. When writing unit tests keep in mind 
-that the ultimate goal is to check that API responses are correct.
-
-To submit your code, you need to clone project code and create a new GitHub repository under your name. Then you can email to us the link of the project in GitHub.
-
-NOTE
-----
- 
-If you do have time and want to add more features to the project then you can add the notion of customer. An order is placed by a customer. 
-
-Order API, in this case, will use an additional parameter (customerId) which can be used to fetch orders of a certain customer.   
-
-Good luck!
-
-
-### Reference Documentation
-For further reference, please consider the following sections:
-
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/htmlsingle/#boot-features-developing-web-applications)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.3.1.RELEASE/reference/htmlsingle/#boot-features-jpa-and-spring-data)
-
-### Guides
-The following guides illustrate how to use some features concretely:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+# Submit Order Request - Response Examples
+## Request
+```
+{
+    "clientReferenceCode" : "135",
+    "description" : "test description",
+    "orderItems" : [
+        {
+            "unitPrice" : "13.00",
+            "units" : 2
+        },
+        {
+            "unitPrice" : "18.00",
+            "units" : 1
+        }
+    ]
+}
+```
+## Response
+```
+{
+    "id": "71c0d654-a6f9-41ce-8edb-c654e25f64a3",
+    "status": "SUBMITTED",
+    "description": "test description",
+    "clientReferenceCode": "135",
+    "totalAmount": 44.00,
+    "itemCount": 2,
+    "orderItems": [
+        {
+            "itemId": "9b9c184a-5a4a-48f6-804b-a6bf4af0796a",
+            "units": 2,
+            "unitPrice": 13.00,
+            "totalPrice": 26.00
+        },
+        {
+            "itemId": "d4b40d6d-4e74-4318-be7a-ac5ead168c21",
+            "units": 1,
+            "unitPrice": 18.00,
+            "totalPrice": 18.00
+        }
+    ]
+}
+```
+## Error Response
+```
+{
+    "errorCode": "DUPLICATE_CLIENT_REF",
+    "errorMessage": "Client reference code (clientReferenceCode) already exists"
+}
+```
+# Fetch One Order Response Examples
+## Response
+```
+{
+    "id": "4dc8b4d2-cbcb-48a9-bd25-3c170120218f",
+    "status": "SUBMITTED",
+    "description": "test description",
+    "clientReferenceCode": "12356",
+    "totalAmount": 37.00,
+    "itemCount": 2,
+    "orderItems": [
+        {
+            "itemId": "d5e6ab2f-5219-476d-9f87-64561a5dca4f",
+            "units": 2,
+            "unitPrice": 13.00,
+            "totalPrice": 26.00
+        },
+        {
+            "itemId": "4e992c17-9d49-4a2c-b4db-ee020a289023",
+            "units": 1,
+            "unitPrice": 11.00,
+            "totalPrice": 11.00
+        }
+    ]
+}
+```
+## Error Response
+```
+{
+    "errorCode": "INVALID_ORDER_ID",
+    "errorMessage": "Order ID (orderId) does not exist"
+}
+```
+# Fetch All Orders Response Example
+```
+[
+    {
+        "id": "e6211d64-7279-476a-be36-c4aa6253f736",
+        "status": "SUBMITTED",
+        "description": "test description",
+        "clientReferenceCode": "1356",
+        "totalAmount": 44.00,
+        "itemCount": 2
+    },
+    {
+        "id": "4dc8b4d2-cbcb-48a9-bd25-3c170120218f",
+        "status": "SUBMITTED",
+        "description": "test description",
+        "clientReferenceCode": "12356",
+        "totalAmount": 37.00,
+        "itemCount": 2
+    }
+]
+```
 

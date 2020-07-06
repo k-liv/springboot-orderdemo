@@ -26,7 +26,7 @@ public class OrderDataTests {
 
     @Test
     public void testCreateOrder() {
-        Order order = createOrder();
+        Order order = createOrder("0001");
         orderRepository.save(order);
 
         Assert.isTrue(orderRepository.findById(order.getId()).isPresent(), "order not found");
@@ -35,7 +35,7 @@ public class OrderDataTests {
 
     @Test
     public void testCreateOrderItems() {
-        Order order = createOrder();
+        Order order = createOrder("0002");
         orderRepository.save(order);
         OrderItem orderItem1 = createOrderItem(order, 1, BigDecimal.valueOf(10.00));
         orderItemRepository.save(orderItem1);
@@ -53,10 +53,10 @@ public class OrderDataTests {
         Assertions.assertThrows(DataIntegrityViolationException.class, ()-> orderItemRepository.save(orderItem));
     }
 
-    private Order createOrder() {
+    private Order createOrder(String clientRef) {
         Order order = new Order();
         order.setStatus(OrderStatus.SUBMITTED);
-        order.setClientReferenceCode("ORDER-1");
+        order.setClientReferenceCode(clientRef);
         order.setDescription("first order");
         order.setItemCount(10);
         order.setItemTotalAmount(BigDecimal.valueOf(100.23));
